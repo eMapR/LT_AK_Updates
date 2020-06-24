@@ -62,13 +62,13 @@ def create_cnd_vectors(shp_path,output_filepath,gridsize):
 	try: 
 		#check if file has already been created
 		if os.path.exists(output_filename):
-			print 'cnd file already exists' 
+			print ('cnd file already exists' )
 		else:
-			print 'making file'
+			print ('making file')
 			#call make_fishnet_grid and assign extents from get_shp_extent tuple 
 			subprocess.call(['python', 'make_fishnet_grid.py', output_filename, str(grid_extent[0]), str(grid_extent[1]), str(grid_extent[2]), str(grid_extent[3]), str(gridsize), str(gridsize)])
 	except RuntimeError:
-		print 'That file does not exist' 
+		print ('That file does not exist' )
 		pass
 	return output_filename
 def make_bounding_fields(input_tiles): 
@@ -111,14 +111,14 @@ def intersect_polygons(input_grid,simple_bounds,shp_path,epsg,output_filepath):
 		#grid.loc[:,('id')] = np.arange(len(grid)).astype(str)
 
 	except RuntimeError: 
-		print 'could not understand grid projection, reprojecting'
+		print ('could not understand grid projection, reprojecting')
 		#remove the variable grid if it is stored
 		del grid
 		#in the case that it cannot find the projection, reproject it [this is a place where people could run into an error]
 		reprojected_grid = reproject(input_grid,epsg)
 		grid = gpd.read_file(reprojected_grid)
-		print 'grid crs is'
-		print grid.crs
+		print ('grid crs is')
+		print (grid.crs)
 		grid = grid.to_crs('+init=epsg:{epsg}'.format(epsg=epsg))
 		
 		#create a name field 
@@ -133,14 +133,14 @@ def intersect_polygons(input_grid,simple_bounds,shp_path,epsg,output_filepath):
 			bounds = gpd.read_file(shp_path)
 		else: 
 			bounds = gpd.read_file(simple_bounds)
-		print 'bounds crs is'
-		print bounds.crs
+		print ('bounds crs is')
+		print (bounds.crs)
 		bounds = bounds.to_crs('+init=epsg:{epsg}'.format(epsg=epsg))
 		
 		print('bounds read in ')
 
 	except RuntimeError: 
-		print 'could not understand bounds projection, reprojecting'
+		print ('could not understand bounds projection, reprojecting')
 		del bounds 
 		if simple_bounds == None: 
 			reprojected_bounds = reproject(shp_path,epsg)
@@ -154,12 +154,12 @@ def intersect_polygons(input_grid,simple_bounds,shp_path,epsg,output_filepath):
 	#spatial_join = spatial_join.to_crs('+init=epsg:{epsg}'.format(epsg=epsg))
 
 	if 'FID' in spatial_join.columns: 
-		print 'FID already exists, destroying'
+		print ('FID already exists, destroying')
 		spatial_join.drop(['FID'],axis=1)
 		#create new FID
 		spatial_join.loc[:,('FID')]=np.arange(len(spatial_join))
 	else: 
-		print 'FID does not exist, creating'
+		print ('FID does not exist, creating')
 		spatial_join.loc[:,('FID')]=np.arange(len(spatial_join))
 
 
@@ -184,17 +184,17 @@ def create_gee_vectors(input_tiles,output_filepath,nrows,ncols,epsg):
 
 	try: 
 		if os.path.exists(output_filename):
-			print 'gee file already exists' 
+			print ('gee file already exists' )
 		else:
 
 			subprocess.call(['python', 'make_processing_tiles.py', '{nrows},{ncols}'.format(nrows=nrows,ncols=ncols), '--tile_path',input_tiles, '--out_path', output_filename])
 	except RuntimeError:
-		print 'That file does not exist' 
+		print ('That file does not exist' )
 		
 
 	try: 
 		if os.path.exists(clipped_filename): 
-			print 'clipped gee file already exists'
+			print ('clipped gee file already exists')
 		else: 
 			print('making dissolve file')
 			cnd_grid=gpd.read_file(input_tiles)
